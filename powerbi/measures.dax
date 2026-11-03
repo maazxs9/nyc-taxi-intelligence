@@ -1,0 +1,31 @@
+Pickups = SUM(Daily[pickups])
+
+Fare Revenue = SUM(Daily[fare_revenue])
+
+Total Charges = SUM(Daily[total_charges])
+
+Eligible Financial Trips = SUM(Daily[financial_trips])
+
+Average Fare = DIVIDE([Fare Revenue], [Eligible Financial Trips])
+
+Pickups Previous Week = CALCULATE([Pickups], DATEADD(Dates[date], -7, DAY))
+
+Pickups WoW Percent = DIVIDE([Pickups] - [Pickups Previous Week], [Pickups Previous Week])
+
+Pickups 7 Day Mean = AVERAGEX(DATESINPERIOD(Dates[date], MAX(Dates[date]), -7, DAY), [Pickups])
+
+Pattern Mean Per Zone Hour = DIVIDE(SUM(Pattern[pickups]), SUM(Pattern[observed_hours]))
+
+Observed Pickups = SUM(Forecast[actual])
+
+Predicted Pickups = SUM(Forecast[prediction])
+
+Baseline Pickups = SUM(Forecast[baseline])
+
+Model MAE = AVERAGEX(Forecast, ABS(Forecast[actual] - Forecast[prediction]))
+
+Baseline MAE = AVERAGEX(Forecast, ABS(Forecast[actual] - Forecast[baseline]))
+
+Model WAPE = DIVIDE(SUMX(Forecast, ABS(Forecast[actual] - Forecast[prediction])), SUM(Forecast[actual]))
+
+MAE Improvement = DIVIDE([Baseline MAE] - [Model MAE], [Baseline MAE])

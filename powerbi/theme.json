@@ -1,0 +1,27 @@
+{
+  "name": "NYC Taxi Intelligence",
+  "dataColors": [
+    "#284D49",
+    "#EFC436",
+    "#91A5A5",
+    "#567B88",
+    "#A48B47"
+  ],
+  "background": "#F5F6F5",
+  "foreground": "#14252D",
+  "tableAccent": "#EFC436",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 13
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10
+    },
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 32
+    }
+  }
+}
