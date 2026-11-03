@@ -1,0 +1,12 @@
+{
+  "engine": "PGlite embedded PostgreSQL",
+  "version": "PostgreSQL 18.6 (PGlite 0.5.15) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.13 (e13ee988ce3d87a738dd8f3661d02223308c412a), 32-bit",
+  "full_hourly_aggregate_rows": 567817,
+  "full_pickups_reconciled": 11137151,
+  "model_mae": 21.888431853348234,
+  "model_wape": 0.1346689378984946,
+  "schema_rerun_passed": true,
+  "analytical_queries_passed": 5,
+  "native_server_load_verified": false,
+  "note": "Full aggregates and held-out predictions verified in embedded PostgreSQL. Native psycopg trip-fact load still requires authenticated PostgreSQL."
+}

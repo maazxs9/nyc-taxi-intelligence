@@ -1,0 +1,13 @@
+{
+  "schema_checked_files": 33,
+  "schema_errors": [],
+  "official_schema_resources": 10,
+  "resource_aliases": [
+    {
+      "schema_id": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualConfiguration/2.1.0/schema.embedded.json",
+      "served_url": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualConfiguration/2.1.0/schema-embedded.json"
+    }
+  ],
+  "desktop_refresh_verified": false,
+  "note": "JSON schema validation does not validate DAX, M execution, semantic-model refresh, or visual rendering in Power BI Desktop."
+}
