@@ -1,0 +1,469 @@
+{
+  "name": "NYCTaxi",
+  "compatibilityLevel": 1600,
+  "model": {
+    "culture": "en-US",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "en-US",
+    "tables": [
+      {
+        "name": "Daily",
+        "columns": [
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "sourceColumn": "date",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "zone_id",
+            "dataType": "int64",
+            "sourceColumn": "zone_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "pickups",
+            "dataType": "int64",
+            "sourceColumn": "pickups",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "financial_trips",
+            "dataType": "int64",
+            "sourceColumn": "financial_trips",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "fare_revenue",
+            "dataType": "double",
+            "sourceColumn": "fare_revenue",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "total_charges",
+            "dataType": "double",
+            "sourceColumn": "total_charges",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "miles",
+            "dataType": "double",
+            "sourceColumn": "miles",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "duration_minutes",
+            "dataType": "double",
+            "sourceColumn": "duration_minutes",
+            "summarizeBy": "sum"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Daily",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(DataFolder & \"/daily.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Typed = Table.TransformColumnTypes(Headers, {{\"date\", type datetime}, {\"zone_id\", Int64.Type}, {\"pickups\", Int64.Type}, {\"financial_trips\", Int64.Type}, {\"fare_revenue\", type number}, {\"total_charges\", type number}, {\"miles\", type number}, {\"duration_minutes\", type number}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Pickups",
+            "expression": "SUM(Daily[pickups])",
+            "formatString": "#,0",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Fare Revenue",
+            "expression": "SUM(Daily[fare_revenue])",
+            "formatString": "$#,0.00",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Total Charges",
+            "expression": "SUM(Daily[total_charges])",
+            "formatString": "$#,0.00",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Eligible Financial Trips",
+            "expression": "SUM(Daily[financial_trips])",
+            "formatString": "#,0",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Average Fare",
+            "expression": "DIVIDE([Fare Revenue], [Eligible Financial Trips])",
+            "formatString": "$0.00",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Pickups Previous Week",
+            "expression": "CALCULATE([Pickups], DATEADD(Dates[date], -7, DAY))",
+            "formatString": "#,0",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Pickups WoW Percent",
+            "expression": "DIVIDE([Pickups] - [Pickups Previous Week], [Pickups Previous Week])",
+            "formatString": "0.0%",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Pickups 7 Day Mean",
+            "expression": "AVERAGEX(DATESINPERIOD(Dates[date], MAX(Dates[date]), -7, DAY), [Pickups])",
+            "formatString": "#,0.0",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Pattern Mean Per Zone Hour",
+            "expression": "DIVIDE(SUM(Pattern[pickups]), SUM(Pattern[observed_hours]))",
+            "formatString": "0.0",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Observed Pickups",
+            "expression": "SUM(Forecast[actual])",
+            "formatString": "#,0",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Predicted Pickups",
+            "expression": "SUM(Forecast[prediction])",
+            "formatString": "#,0.0",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Baseline Pickups",
+            "expression": "SUM(Forecast[baseline])",
+            "formatString": "#,0.0",
+            "displayFolder": "KPIs"
+          },
+          {
+            "name": "Model MAE",
+            "expression": "AVERAGEX(Forecast, ABS(Forecast[actual] - Forecast[prediction]))",
+            "formatString": "0.0",
+            "displayFolder": "Forecast evaluation"
+          },
+          {
+            "name": "Baseline MAE",
+            "expression": "AVERAGEX(Forecast, ABS(Forecast[actual] - Forecast[baseline]))",
+            "formatString": "0.0",
+            "displayFolder": "Forecast evaluation"
+          },
+          {
+            "name": "Model WAPE",
+            "expression": "DIVIDE(SUMX(Forecast, ABS(Forecast[actual] - Forecast[prediction])), SUM(Forecast[actual]))",
+            "formatString": "0.0%",
+            "displayFolder": "Forecast evaluation"
+          },
+          {
+            "name": "MAE Improvement",
+            "expression": "DIVIDE([Baseline MAE] - [Model MAE], [Baseline MAE])",
+            "formatString": "0.0%",
+            "displayFolder": "Forecast evaluation"
+          }
+        ]
+      },
+      {
+        "name": "Zones",
+        "columns": [
+          {
+            "name": "zone_id",
+            "dataType": "int64",
+            "sourceColumn": "zone_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "borough",
+            "dataType": "string",
+            "sourceColumn": "borough",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "zone",
+            "dataType": "string",
+            "sourceColumn": "zone",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "service_zone",
+            "dataType": "string",
+            "sourceColumn": "service_zone",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Zones",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(DataFolder & \"/zones.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Typed = Table.TransformColumnTypes(Headers, {{\"zone_id\", Int64.Type}, {\"borough\", type text}, {\"zone\", type text}, {\"service_zone\", type text}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Dates",
+        "columns": [
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "sourceColumn": "date",
+            "summarizeBy": "none",
+            "isKey": true,
+            "formatString": "yyyy-MM-dd"
+          },
+          {
+            "name": "date_key",
+            "dataType": "int64",
+            "sourceColumn": "date_key",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "year",
+            "dataType": "int64",
+            "sourceColumn": "year",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "month",
+            "dataType": "int64",
+            "sourceColumn": "month",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "weekday",
+            "dataType": "int64",
+            "sourceColumn": "weekday",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "weekday_name",
+            "dataType": "string",
+            "sourceColumn": "weekday_name",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Dates",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(DataFolder & \"/dates.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Typed = Table.TransformColumnTypes(Headers, {{\"date\", type datetime}, {\"date_key\", Int64.Type}, {\"year\", Int64.Type}, {\"month\", Int64.Type}, {\"weekday\", Int64.Type}, {\"weekday_name\", type text}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Pattern",
+        "columns": [
+          {
+            "name": "zone_id",
+            "dataType": "int64",
+            "sourceColumn": "zone_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "weekday",
+            "dataType": "int64",
+            "sourceColumn": "weekday",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "hod",
+            "dataType": "int64",
+            "sourceColumn": "hod",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "pickups",
+            "dataType": "int64",
+            "sourceColumn": "pickups",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "observed_hours",
+            "dataType": "int64",
+            "sourceColumn": "observed_hours",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "mean_pickups",
+            "dataType": "double",
+            "sourceColumn": "mean_pickups",
+            "summarizeBy": "sum"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Pattern",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(DataFolder & \"/hourly_profile.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Typed = Table.TransformColumnTypes(Headers, {{\"zone_id\", Int64.Type}, {\"weekday\", Int64.Type}, {\"hod\", Int64.Type}, {\"pickups\", Int64.Type}, {\"observed_hours\", Int64.Type}, {\"mean_pickups\", type number}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Forecast",
+        "columns": [
+          {
+            "name": "hour",
+            "dataType": "dateTime",
+            "sourceColumn": "hour",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "zone_id",
+            "dataType": "int64",
+            "sourceColumn": "zone_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "origin",
+            "dataType": "dateTime",
+            "sourceColumn": "origin",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "actual",
+            "dataType": "int64",
+            "sourceColumn": "actual",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "baseline",
+            "dataType": "double",
+            "sourceColumn": "baseline",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "prediction",
+            "dataType": "double",
+            "sourceColumn": "prediction",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "horizon",
+            "dataType": "int64",
+            "sourceColumn": "horizon",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "date",
+            "dataType": "dateTime",
+            "type": "calculated",
+            "expression": "DATE(YEAR([hour]), MONTH([hour]), DAY([hour]))",
+            "formatString": "yyyy-MM-dd"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Forecast",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Csv.Document(File.Contents(DataFolder & \"/predictions.csv\"), [Delimiter=\",\", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),",
+                "    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),",
+                "    Typed = Table.TransformColumnTypes(Headers, {{\"hour\", type datetime}, {\"zone_id\", Int64.Type}, {\"origin\", type datetime}, {\"actual\", Int64.Type}, {\"baseline\", type number}, {\"prediction\", type number}, {\"horizon\", Int64.Type}}, \"en-US\")",
+                "in",
+                "    Typed"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "Daily_Zones",
+        "fromTable": "Daily",
+        "fromColumn": "zone_id",
+        "toTable": "Zones",
+        "toColumn": "zone_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Pattern_Zones",
+        "fromTable": "Pattern",
+        "fromColumn": "zone_id",
+        "toTable": "Zones",
+        "toColumn": "zone_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Forecast_Zones",
+        "fromTable": "Forecast",
+        "fromColumn": "zone_id",
+        "toTable": "Zones",
+        "toColumn": "zone_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Daily_Dates",
+        "fromTable": "Daily",
+        "fromColumn": "date",
+        "toTable": "Dates",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Forecast_Dates",
+        "fromTable": "Forecast",
+        "fromColumn": "date",
+        "toTable": "Dates",
+        "toColumn": "date",
+        "crossFilteringBehavior": "oneDirection"
+      }
+    ],
+    "expressions": [
+      {
+        "name": "DataFolder",
+        "kind": "m",
+        "expression": "\"C:/NYCTaxi/data/exports\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]"
+      }
+    ],
+    "annotations": [
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"DataFolder\", \"Zones\", \"Dates\", \"Daily\", \"Pattern\", \"Forecast\"]"
+      }
+    ]
+  }
+}
