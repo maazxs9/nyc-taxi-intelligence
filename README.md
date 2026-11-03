@@ -1,0 +1,134 @@
+# NYC Taxi Demand & Revenue Intelligence
+
+A real-data analytics portfolio project combining **Python, PostgreSQL SQL, forecasting, Power BI project source, Streamlit, and an interactive website**.
+
+Explore neighborhood pickup patterns and fare metrics, then compare a day-ahead demand model with a previous-week seasonal baseline. Sources are the official NYC TLC Yellow Taxi records for **January–March 2025**.
+
+**Author:** Muaz Shakeel · [GitHub repository](https://github.com/maazxs9/nyc-taxi-intelligence)
+
+![NYC Taxi Intelligence dashboard](docs/refined-site-preview.png)
+
+## Results
+
+| Measure | Verified value |
+|---|---:|
+| Source records | 11,198,026 |
+| Accepted pickups | 11,137,151 |
+| Financially eligible trips | 10,427,978 |
+| Metered fare revenue | $192,732,716.72 |
+| Total recorded charges | $283,594,223.55 |
+| Complete zone-hour rows | 567,817 |
+| Held-out forecast observations | 3,360 |
+| Model MAE | 21.89 pickups / zone-hour |
+| Seasonal baseline MAE | 26.27 pickups / zone-hour |
+| Reduction in MAE | 16.69% |
+| Model WAPE | 13.47% |
+
+Forecast scores cover the 20 busiest training-selected zones and **seven held-out dates, March 25–31**. Conservative DST exclusions reduce the nominal test window. This is a short historical backtest, not a current dispatch tool. Metered fare revenue is not profit.
+
+## Open the website
+
+The deployed demo URL is recorded in `docs/delivery-status.md` after successful deployment. New Sites are private to their owner; sharing settings must be changed before using a private link as a public résumé link.
+
+For a local, dependency-free preview, use Node.js 20+:
+
+```sh
+node scripts/serve.mjs
+```
+
+Then visit **http://127.0.0.1:8766**. You can also double-click `Start Dashboard.command` on a Mac. Keep its terminal open while viewing the site; Ctrl+C stops it. The website reads prepared aggregates and requires no Python, database, or AI API key. Do not open `index.html` directly because browsers block local JSON fetches.
+
+## Python setup and Streamlit
+
+Use **Python 3.11+**, not the Mac's older default Python 3.8. Keep dependencies in a project virtual environment:
+
+```sh
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.lock.txt
+python -m streamlit run app.py
+```
+
+`requirements.lock.txt` records the exact versions used on this Mac. `requirements.txt` lists supported major ranges for other environments; regenerate a lock and rerun checks if using those ranges. PyArrow/PyProj wheel availability varies by OS/Python version.
+
+## Reproduce the pipeline
+
+```sh
+python scripts/download.py --months 2025-01 2025-02 2025-03
+python scripts/pipeline.py
+python scripts/forecast.py
+python -m pytest -q
+```
+
+Downloads total about **190 MB**. Allow several GB of free disk space if also loading native PostgreSQL. The downloader caches completed files, uses TLS verification, writes downloads atomically, and records URLs/sizes/checksums. Raw files and clean trip facts are excluded from the downloadable archive and Git; the scripts reproduce them. To fetch a source again, remove that specific cached raw file before rerunning the downloader.
+
+The `--months` option accepts consecutive months. Forecast training requires enough eligible days for lag history and chronological splits; expand the range if the script reports insufficient coverage. The website's case-study text and tests describe the default quarter; update that narrative if changing the period.
+
+## Native PostgreSQL
+
+The original native server on this laptop requires authentication, so it was not changed. The native loader has not yet been verified against that server.
+
+If Docker is available:
+
+```sh
+docker compose up -d
+export DATABASE_URL='postgresql://taxi:taxi_local_dev@localhost:55432/taxi'
+python scripts/load_postgres.py
+```
+
+Otherwise use your own authenticated local PostgreSQL URL in `DATABASE_URL`. Keep the environment variable private; do not commit credentials. If needed, copy `.env.example` to `.env` for reference, but the loader reads process environment variables rather than automatically loading `.env`.
+
+The loader creates its own `taxi` schema in the selected database and replaces its project snapshot. Use a dedicated project database. It does not operate on unrelated schemas. Source-file loads are transactional and skip unchanged checksum+cleaning-version batches. Re-running a snapshot prevents duplicate source rows. It removes obsolete source batches when replacing the snapshot. All accepted trip facts are loaded; full raw/clean files must be present first.
+
+Run `sql/analysis.sql` with your preferred SQL client. The SQL demonstrates joins, CTEs, rankings, window functions, rolling means, safe ratios, and forecast scoring.
+
+The large generated `hourly.csv` is omitted from GitHub. Its complete data is included as `hourly.parquet`; restore the CSV with `python scripts/restore_exports.py` before SQL verification or native loading. Raw monthly files and clean trip facts are regenerated by the pipeline.
+
+### Already-executed SQL verification
+
+All aggregate rows and forecast predictions were loaded into **PGlite embedded PostgreSQL 18.6**. The schema was rerun, all five analytical queries executed, and pickup totals and forecast scores reconciled. This verifies PostgreSQL SQL behavior without claiming that the existing native PostgreSQL 16 server was loaded.
+
+To reproduce that check with Node:
+
+```sh
+python scripts/restore_exports.py
+npm install
+npm run test:sql
+```
+
+## Power BI
+
+Open **`powerbi/NYCTaxi.pbip` in Power BI Desktop on Windows** and follow `powerbi/BUILD_GUIDE.md`. Set the `DataFolder` Power Query parameter to the exported data folder and refresh. The report includes three pages, 25 visual definitions, five model tables, 16 DAX measures, and a matching theme.
+
+**Pending:** Windows Desktop refresh, semantic-model execution and visual review. The generated report JSON passes Microsoft's published structural schemas; that does not validate DAX, M execution or rendering. A PBIX binary is not included. The geographic report page uses zone/borough charts; the guide describes adding the official shape map and drill-through page during Desktop finishing.
+
+```sh
+python scripts/build_powerbi.py
+python scripts/verify_powerbi.py
+```
+
+## Optional Claude workflow
+
+See `docs/claude-workflow.md`. Claude is optional for explaining verified results, reviewing SQL, and preparing interview practice. No API call was made and no subscription is required for the core project. `scripts/prepare_brief.py` creates a compact evidence payload and grounded prompt you can paste into Claude.
+
+## Repository map
+
+```text
+app.py                        Local Streamlit companion
+scripts/                      Downloads, pipeline, model, SQL/Power BI checks
+sql/                          Warehouse schema, reporting views and analysis
+tests/                        Data reconciliation and forecast leakage checks
+powerbi/                      PBIP/PBIR source, semantic model, DAX and theme
+data/source_manifest.json     Source URLs and checksums
+data/exports/                 Prepared reports, predictions and metrics
+website/dist/                 Deployable static interactive demo
+docs/                         Methodology, case study and delivery status
+```
+
+The report downloads include reproducible source and prepared exports. Raw monthly trip files, the native database, Python environment and third-party packages are intentionally regenerated locally.
+
+## Sources and reuse
+
+[Official NYC TLC records and boundaries](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) · [Yellow Taxi data dictionary](https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_yellow.pdf).
+
+Original project code is provided under the MIT license in `LICENSE`. NYC TLC data and third-party libraries retain their own terms and attribution. TLC does not guarantee provider-supplied data accuracy. See `docs/methodology.md` for exclusions, time handling, evaluation design and limitations.

@@ -1,0 +1,14 @@
+.venv/
+.env
+__pycache__/
+.pytest_cache/
+data/raw/
+data/*.duckdb*
+data/clean/
+.DS_Store
+node_modules/
+powerbi/**/.pbi/
+website/.openai/local/
+
+# Large generated CSV is restored from the included Parquet file.
+data/exports/hourly.csv

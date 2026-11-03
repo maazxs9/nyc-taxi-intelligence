@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: taxi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-taxi_local_dev}
+      POSTGRES_DB: taxi
+    ports:
+      - '127.0.0.1:55432:5432'
+    volumes:
+      - taxi_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U taxi -d taxi']
+      interval: 5s
+      retries: 10
+volumes:
+  taxi_pg:
