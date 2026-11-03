@@ -1,0 +1,378 @@
+{
+  "train_start": "2025-01-15 00:00:00",
+  "validation_start": "2025-02-24 00:00:00",
+  "test_start": "2025-03-14 00:00:00",
+  "effective_test_start": "2025-03-25 00:00:00",
+  "test_end": "2025-03-31 23:00:00",
+  "zones": [
+    161,
+    237,
+    236,
+    132,
+    230,
+    186,
+    162,
+    142,
+    234,
+    170,
+    239,
+    163,
+    68,
+    79,
+    138,
+    48,
+    249,
+    141,
+    164,
+    140
+  ],
+  "validation_candidates": [
+    {
+      "leaves": 15,
+      "mae": 23.083114894193383,
+      "wape": 0.14105048246866797,
+      "observations": 6240,
+      "actual_pickups": 1021185
+    },
+    {
+      "leaves": 31,
+      "mae": 22.877320848077318,
+      "wape": 0.1397929680635756,
+      "observations": 6240,
+      "actual_pickups": 1021185
+    }
+  ],
+  "selected_max_leaf_nodes": 31,
+  "model": {
+    "mae": 21.888431853348287,
+    "wape": 0.1346689378984949,
+    "observations": 3360,
+    "actual_pickups": 546118
+  },
+  "baseline": {
+    "mae": 26.27261904761905,
+    "wape": 0.1616427219025925,
+    "observations": 3360,
+    "actual_pickups": 546118
+  },
+  "test_origins": 7,
+  "features": [
+    "zone_id",
+    "hour_sin",
+    "hour_cos",
+    "week_sin",
+    "week_cos",
+    "weekend",
+    "lag24",
+    "lag168",
+    "lag336",
+    "mean24_to47",
+    "trend_week"
+  ],
+  "horizon": "24 hours from midnight NYC local time",
+  "baseline_definition": "Observed pickups at the same NYC wall-clock hour seven days earlier",
+  "dst_excluded_rows": 7660,
+  "mae_improvement_pct": 16.687286434308035,
+  "by_zone": [
+    {
+      "zone_id": 48,
+      "model": {
+        "mae": 21.696530090654228,
+        "wape": 0.15488960418263334,
+        "observations": 168,
+        "actual_pickups": 23533
+      },
+      "baseline": {
+        "mae": 25.785714285714285,
+        "wape": 0.18408192750605532,
+        "observations": 168,
+        "actual_pickups": 23533
+      }
+    },
+    {
+      "zone_id": 68,
+      "model": {
+        "mae": 17.63574469199068,
+        "wape": 0.12494433889657294,
+        "observations": 168,
+        "actual_pickups": 23713
+      },
+      "baseline": {
+        "mae": 20.05952380952381,
+        "wape": 0.14211613882680385,
+        "observations": 168,
+        "actual_pickups": 23713
+      }
+    },
+    {
+      "zone_id": 79,
+      "model": {
+        "mae": 22.058234027187034,
+        "wape": 0.15069673118488153,
+        "observations": 168,
+        "actual_pickups": 24591
+      },
+      "baseline": {
+        "mae": 28.529761904761905,
+        "wape": 0.19490870643731448,
+        "observations": 168,
+        "actual_pickups": 24591
+      }
+    },
+    {
+      "zone_id": 132,
+      "model": {
+        "mae": 39.384197652094294,
+        "wape": 0.16800937498227214,
+        "observations": 168,
+        "actual_pickups": 39382
+      },
+      "baseline": {
+        "mae": 44.535714285714285,
+        "wape": 0.18998527245949925,
+        "observations": 168,
+        "actual_pickups": 39382
+      }
+    },
+    {
+      "zone_id": 138,
+      "model": {
+        "mae": 25.833549491058555,
+        "wape": 0.17621650552185786,
+        "observations": 168,
+        "actual_pickups": 24629
+      },
+      "baseline": {
+        "mae": 32.333333333333336,
+        "wape": 0.2205530066182143,
+        "observations": 168,
+        "actual_pickups": 24629
+      }
+    },
+    {
+      "zone_id": 140,
+      "model": {
+        "mae": 10.79601169681644,
+        "wape": 0.10726417677362124,
+        "observations": 168,
+        "actual_pickups": 16909
+      },
+      "baseline": {
+        "mae": 14.303571428571429,
+        "wape": 0.14211366727778107,
+        "observations": 168,
+        "actual_pickups": 16909
+      }
+    },
+    {
+      "zone_id": 141,
+      "model": {
+        "mae": 14.207568931840521,
+        "wape": 0.12383893226881848,
+        "observations": 168,
+        "actual_pickups": 19274
+      },
+      "baseline": {
+        "mae": 18.31547619047619,
+        "wape": 0.15964511777524126,
+        "observations": 168,
+        "actual_pickups": 19274
+      }
+    },
+    {
+      "zone_id": 142,
+      "model": {
+        "mae": 26.839431188258963,
+        "wape": 0.16496632055125693,
+        "observations": 168,
+        "actual_pickups": 27333
+      },
+      "baseline": {
+        "mae": 33.416666666666664,
+        "wape": 0.20539274869205723,
+        "observations": 168,
+        "actual_pickups": 27333
+      }
+    },
+    {
+      "zone_id": 161,
+      "model": {
+        "mae": 27.458897876836847,
+        "wape": 0.10667101797411531,
+        "observations": 168,
+        "actual_pickups": 43246
+      },
+      "baseline": {
+        "mae": 30.470238095238095,
+        "wape": 0.1183693289552791,
+        "observations": 168,
+        "actual_pickups": 43246
+      }
+    },
+    {
+      "zone_id": 162,
+      "model": {
+        "mae": 19.14877568420287,
+        "wape": 0.10955945628669013,
+        "observations": 168,
+        "actual_pickups": 29363
+      },
+      "baseline": {
+        "mae": 23.845238095238095,
+        "wape": 0.1364302012737118,
+        "observations": 168,
+        "actual_pickups": 29363
+      }
+    },
+    {
+      "zone_id": 163,
+      "model": {
+        "mae": 18.38808053875086,
+        "wape": 0.12333602948497402,
+        "observations": 168,
+        "actual_pickups": 25047
+      },
+      "baseline": {
+        "mae": 22.523809523809526,
+        "wape": 0.1510759771629337,
+        "observations": 168,
+        "actual_pickups": 25047
+      }
+    },
+    {
+      "zone_id": 164,
+      "model": {
+        "mae": 16.032732130816754,
+        "wape": 0.1313197307774957,
+        "observations": 168,
+        "actual_pickups": 20511
+      },
+      "baseline": {
+        "mae": 21.613095238095237,
+        "wape": 0.17702696114280142,
+        "observations": 168,
+        "actual_pickups": 20511
+      }
+    },
+    {
+      "zone_id": 170,
+      "model": {
+        "mae": 17.006826739128286,
+        "wape": 0.11381694985354548,
+        "observations": 168,
+        "actual_pickups": 25103
+      },
+      "baseline": {
+        "mae": 23.577380952380953,
+        "wape": 0.15778990558897343,
+        "observations": 168,
+        "actual_pickups": 25103
+      }
+    },
+    {
+      "zone_id": 186,
+      "model": {
+        "mae": 24.31488575181799,
+        "wape": 0.13700824438388134,
+        "observations": 168,
+        "actual_pickups": 29815
+      },
+      "baseline": {
+        "mae": 31.38095238095238,
+        "wape": 0.17682374643635754,
+        "observations": 168,
+        "actual_pickups": 29815
+      }
+    },
+    {
+      "zone_id": 230,
+      "model": {
+        "mae": 22.73117127774115,
+        "wape": 0.12028968956627441,
+        "observations": 168,
+        "actual_pickups": 31747
+      },
+      "baseline": {
+        "mae": 26.279761904761905,
+        "wape": 0.13906825841811823,
+        "observations": 168,
+        "actual_pickups": 31747
+      }
+    },
+    {
+      "zone_id": 234,
+      "model": {
+        "mae": 19.43762820248398,
+        "wape": 0.12617934845507375,
+        "observations": 168,
+        "actual_pickups": 25880
+      },
+      "baseline": {
+        "mae": 23.976190476190474,
+        "wape": 0.15564142194744976,
+        "observations": 168,
+        "actual_pickups": 25880
+      }
+    },
+    {
+      "zone_id": 236,
+      "model": {
+        "mae": 28.644818826891576,
+        "wape": 0.15002430286241808,
+        "observations": 168,
+        "actual_pickups": 32077
+      },
+      "baseline": {
+        "mae": 27.446428571428573,
+        "wape": 0.14374785671976806,
+        "observations": 168,
+        "actual_pickups": 32077
+      }
+    },
+    {
+      "zone_id": 237,
+      "model": {
+        "mae": 26.681187683322865,
+        "wape": 0.11758760573972302,
+        "observations": 168,
+        "actual_pickups": 38120
+      },
+      "baseline": {
+        "mae": 29.892857142857142,
+        "wape": 0.13174186778593913,
+        "observations": 168,
+        "actual_pickups": 38120
+      }
+    },
+    {
+      "zone_id": 239,
+      "model": {
+        "mae": 20.631285655675637,
+        "wape": 0.1434744593986881,
+        "observations": 168,
+        "actual_pickups": 24158
+      },
+      "baseline": {
+        "mae": 25.678571428571427,
+        "wape": 0.1785743852967961,
+        "observations": 168,
+        "actual_pickups": 24158
+      }
+    },
+    {
+      "zone_id": 249,
+      "model": {
+        "mae": 18.84107892939624,
+        "wape": 0.14595385531141092,
+        "observations": 168,
+        "actual_pickups": 21687
+      },
+      "baseline": {
+        "mae": 21.488095238095237,
+        "wape": 0.16645916908747177,
+        "observations": 168,
+        "actual_pickups": 21687
+      }
+    }
+  ]
+}
